@@ -1,0 +1,31 @@
+{
+  "name": "node-paps",
+  "version": "0.1.0",
+  "description": "a nodejs paps.sn integration",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node-dev src/index.ts",
+    "start": "node dist/index.js"
+  },
+  "repository": "git@github.com:bcdbuddy/node-paps.git",
+  "author": "Babacar Cissé DIA <bcdbuddy@outlook.com>",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "typescript": "^3.8.3"
+  },
+  "devDependencies": {
+    "@types/dotenv": "^8.2.0",
+    "@types/jest": "^25.2.1",
+    "jest": "^26.0.1",
+    "ts-jest": "^25.5.0",
+    "ts-node": "^8.10.1",
+    "ts-node-dev": "^1.0.0-pre.44"
+  },
+  "engines": {
+    "yarn": "1.x",
+    "node": "12.x",
+    "npm": "6.x"
+  }
+}
