@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { PAPS_API_KEY, PAPS_API_CODE, PAPS_API_URL } from "@/config";
+import { PAPS_API_KEY, PAPS_API_CODE, PAPS_API_URL } from "./config";
 import { URLSearchParams } from "url";
 
 export enum PapsOrderStatus {
@@ -39,7 +39,20 @@ export interface ICreatePickUpRequest {
   jobVehicleType?: IJobVehicleType // Type de véhicule sélectionné pour effectuer le pickup
 }
 
-export interface ICreatePickUpResponse {}
+export interface ICreatePickUpResponseContent {
+  job_id: number, // 91444928,
+  job_hash: string, // 'bd278c01c126c1ba72f406a754c673ca',
+  job_pickup_name: string, // 'dieuli samay daleu',
+  job_pickup_address: string, // 'souniou keur',
+  job_token: string, // '9144492815888883953888982',
+  tracking_link: string, // 'https://jngl.ml/Z6aP754c6',
+  order_id: string, // 'y5wag17j3u',
+  pickupOrderId: string, // 'y5wag17j3u',
+  pickupAddressNotFound: boolean, // true,
+  deliveryAddressNotFound: boolean // false
+}
+
+export interface ICreatePickUpResponse extends IPapsResponse<ICreatePickUpResponseContent> {}
 
 export type IJobPackageType = 'S' | 'M' | 'L' | 'XL'
 
@@ -67,6 +80,38 @@ export interface ITaskResponseContent {
 }
 export interface ITaskResponse extends IPapsResponse<ITaskResponseContent> {
 
+}
+
+export interface IViewAllTasksDetailsRequest {
+  date?: string,
+  startDate?: string,
+  endDate?: string,
+  selectBy: 'intervalle' | 'month'
+}
+
+export interface IViewTaskDetailsResponse {
+  job_amount_to_receive: number, // 0,
+  job_package_type: any, // null,
+  job_rate: number, // 0,
+  creation_datetime: string, // '2020-05-07T21:51:12.000Z',
+  completed_datetime: string, // '0',
+  customer_username: string, // 'dieuli samay daleu',
+  job_description: string, // 'soo deimei beu souniou keur ngeu inddil meu samay plastique',
+  job_pickup_address: string, // 'souniou keur',
+  job_address: any, // null,
+  job_pickup_name: string, // 'dieuli samay daleu',
+  job_state: string, // 'Unassigned',
+  job_status: PapsOrderStatus, // 6,
+  job_hash: string, // 'ee9d50a70240f4c2dfff7fea3204df57',
+  job_token: string, // '9144478315888882728876103',
+  fleet_name: null,
+  job_type: number, // 0,
+  job_amount_received: number, // 0,
+  job_comment: string, // null,
+  job_id: number, // 91444783,
+  order_id: string, // 'y5wag17j3u',
+  job_date_utc: string, // '2020-05-15T00:00:00.000Z',
+  last_updated_at: string // '2020-05-07T21:51:13.758Z'
 }
 
 export interface ICreateDeliveryResponseContent {
@@ -147,44 +192,37 @@ export interface IPapsRepositoryOptions {
 
 const headers = {
   'content-type': 'application/json',
-  'accept': 'application/json',
+  'accept': 'application/json'
 }
 
 export default class PapsRepository {
   private readonly options: any;
   constructor (options: IPapsRepositoryOptions) {
-    const defaultOptions = {
-      apiKey: '',
-      test: true
-    }
+    const defaultOptions = {}
     this.options = Object.assign({}, defaultOptions, options)
   }
 
-  getUrl (options) {
+  getUrl (options): string {
     const { method, ...queries } = options
-    const { apiKey, ...rootQueries } = this.options
-    const url = PAPS_API_URL
+    const { apiKey, url,...rootQueries } = this.options
+    const fullUrl = url
       .replace(':method', method)
-      .replace(':apiKey', apiKey)
-    const urlSearchParams = new URLSearchParams(url)
-    const allQueries = Object.assign({}, rootQueries, queries)
-    Object.keys(allQueries).forEach(key => {
-      urlSearchParams.append(key, allQueries[key])
-    })
-    return urlSearchParams.toString()
+    const allQueries = Object.assign({ apiKey }, rootQueries, queries)
+    const queryString = Object.keys(allQueries)
+      .sort()
+      .map(key => `${key}=${allQueries[key]}`)
+      .join('&')
+    return decodeURIComponent(`${fullUrl}${queryString ? '?' + queryString : ''}`)
   }
 
 
   createPickup (payload: ICreatePickUpRequest): Promise<ICreatePickUpResponse> {
     return new Promise((resolve, reject) => {
       axios({
-        url: this.getUrl({ method: 'createPick' }),
+        url: this.getUrl({ method: 'createPickUp' }),
         method: 'POST',
         data: payload,
-        headers: {
-          'content-type': 'application/json',
-          'accept': 'application/json',
-        }
+        headers
       })
         .then(response => resolve(response.data))
         .catch(error => reject(error))
@@ -256,14 +294,18 @@ export default class PapsRepository {
     })
   }
 
-  viewAllTasksDetails (options): Promise<ITaskResponse[]> {
-
+  viewAllTasksDetails (options: IViewAllTasksDetailsRequest): Promise<IViewTaskDetailsResponse[]> {
     return new Promise((resolve, reject) => {
       axios({
-        url: this.getUrl({ method: 'viewAllTasksDetails' }),
+        url: this.getUrl({
+          method: 'viewAllTasksDetails',
+          ...options
+        }),
         method: 'GET',
         headers
       })
+        .then(response => resolve(response.data))
+        .catch(error => reject(error))
     })
   }
 

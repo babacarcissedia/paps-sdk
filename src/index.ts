@@ -9,8 +9,8 @@ const repository = new PapsRepository({
   url: PAPS_API_URL
 })
 
-repository.createDelivery()
-repository.createPickup()
-repository.createPickupAndDelivery()
-repository.createMultipleTasks()
-repository.createTasksWithClientApp()
+// repository.createDelivery()
+// repository.createPickup()
+// repository.createPickupAndDelivery()
+// repository.createMultipleTasks()
+// repository.createTasksWithClientApp()
