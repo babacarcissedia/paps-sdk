@@ -17,6 +17,8 @@
     "moduleResolution": "node",
     "noImplicitAny": false,
     "downlevelIteration": true,
+    "declaration": true,
+    "declarationDir": "./typings",
     "typeRoots": [
       "src/types.d.ts",
       "node_modules/@types"
@@ -25,9 +27,6 @@
       "@/*": ["*"]
     }
   },
-  "files": [
-    "src/types.d.ts"
-  ],
   "include": [
     "src/**/*.ts"
   ],

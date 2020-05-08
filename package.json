@@ -1,21 +1,20 @@
 {
   "name": "node-paps",
-  "version": "0.2.0",
+  "version": "0.4.0",
   "description": "a nodejs paps.sn integration",
-  "main": "src/index.ts",
+  "main": "index.js",
   "scripts": {
     "build": "tsc",
     "postbuild": "yarn test:coverage",
     "start": "node dist/index.js",
     "test": "jest",
-    "test:coverage": "yarn test --coverage",
+    "test:coverage": "yarn test --coverage"
   },
   "repository": "git@github.com:bcdbuddy/node-paps.git",
   "author": "Babacar Cissé DIA <bcdbuddy@outlook.com>",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.19.2",
-    "typescript": "^3.8.3"
+    "axios": "^0.19.2"
   },
   "devDependencies": {
     "@types/dotenv": "^8.2.0",
@@ -28,7 +27,8 @@
     "moment": "^2.25.3",
     "ts-jest": "^25.5.0",
     "ts-node": "^8.10.1",
-    "ts-node-dev": "^1.0.0-pre.44"
+    "ts-node-dev": "^1.0.0-pre.44",
+    "typescript": "^3.8.3"
   },
   "engines": {
     "yarn": "1.x",
