@@ -1,13 +1,10 @@
 [![Coverage Status](https://coveralls.io/repos/github/bcdbuddy/node-paps/badge.svg?branch=master)](https://coveralls.io/github/bcdbuddy/node-paps?branch=master)
-![](https://img.shields.io/bundlephobia/min/node-paps?style=plastic)
-![Npm](https://img.shields.io/npm/l/node-paps)
+![License](https://img.shields.io/npm/l/node-paps)
 ![Npm version](https://img.shields.io/npm/v/node-paps)
 ![Npm downloads](https://img.shields.io/npm/dm/node-paps)
-![Tag](https://img.shields.io/github/v/tag/bcdbuddy/node-paps)
-![Test](https://img.shields.io/github/workflow/status/bcdbuddy/node-paps/integrate?style=plastic)
+![.github/workflows/integrate.yml](https://github.com/bcdbuddy/node-paps/workflows/.github/workflows/integrate.yml/badge.svg)
 ![Issues](https://img.shields.io/github/issues/bcdbuddy/node-paps)
 ![PR](https://img.shields.io/github/issues-pr/bcdbuddy/node-paps)
-![License](https://img.shields.io/apm/l/node-paps)
 
 # Paps API integration
 Fully tested API integration of https://paps.sn with typescript
