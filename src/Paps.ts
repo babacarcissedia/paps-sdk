@@ -1,6 +1,4 @@
 import axios from 'axios'
-import { PAPS_API_KEY, PAPS_API_CODE, PAPS_API_URL } from "./config";
-import { URLSearchParams } from "url";
 
 export enum PapsOrderStatus {
   ASSIGNED=0,
@@ -54,7 +52,8 @@ export interface ICreatePickUpResponseContent {
 
 export interface ICreatePickUpResponse extends IPapsResponse<ICreatePickUpResponseContent> {}
 
-export type IJobPackageType = 'S' | 'M' | 'L' | 'XL'
+export type IPackageType = 'S' | 'M' | 'L' | 'XL'
+export type IPackageSize = 'small' | 'medium' | 'large' | 'xlarge'
 
 export interface ICreateDeliveryRequest {
   customerUsername: string, // Nom du contact chez qui la livraison doit être effectuée
@@ -63,7 +62,7 @@ export interface ICreateDeliveryRequest {
   customerAddress: string, //	type=Geoplace	Adresse du contact chez qui la livraison doit être effectuée
   jobDeliveryDatetime: string, // type=Datetime	Heure/date à laquelle la course doit être prise en charge
   jobDescription: string,	// Description de la commande pour une meilleure prise en charge
-  jobPackageType?: IJobPackageType, // (optionnel)	One of "S" | "M" | "L" | "XL"	Type de colis à livrer: S correspond à max 5kg et transportable en scooter, M à max 30 kg et transportable en Mini Van, L à max 60 kg et transportable en Van et XL à max 100kg et transportable en Van
+  jobPackageType?: IPackageType, // (optionnel)	One of "S" | "M" | "L" | "XL"	Type de colis à livrer: S correspond à max 5kg et transportable en scooter, M à max 30 kg et transportable en Mini Van, L à max 60 kg et transportable en Van et XL à max 100kg et transportable en Van
   jobAmountToReceive?: string // (optionnel)	Number	Montant (cash) à collecter auprès du destinataire du colis
 }
 
@@ -136,10 +135,11 @@ export interface ICreatePickupAndDeliveryRequest {
   customerAddress: string, //	type=Geoplace	Adresse du destinataire
   customerUsername: string, //	type=String	Nom du destinataire
   jobVehicleType?: IJobVehicleType, // Type de véhicule sélectionné pour effectuer le pickup
-  jobPackageType?: IJobPackageType, // Type de colis à livrer: S correspond à max 5kg et transportable en scooter, M à max 30 kg et transportable en Mini Van, L à max 60 kg et transportable en Van et XL à max 100kg et transportable en Van
+  jobPackageType?: IPackageType, // Type de colis à livrer: S correspond à max 5kg et transportable en scooter, M à max 30 kg et transportable en Mini Van, L à max 60 kg et transportable en Van et XL à max 100kg et transportable en Van
   jobAmountToReceive?: number // type=Number Montant (cash) à collecter auprès du destinataire du colis
 }
 
+// TODO
 export interface ICreatePickupAndDeliveryResponse {
 
 }
@@ -184,20 +184,64 @@ export interface ICreateMultipleTasksResponseContent {
 export interface ICreateMultipleTasksResponse extends IPapsResponse<ICreateMultipleTasksResponseContent>{
 }
 
-export interface IPapsRepositoryOptions {
+export interface IPapsOptions {
   url: string,
   apiKey: string,
   test?: boolean
 }
+
+
+export interface IGetQuoteRequest {
+  origin: string, // point de pickup de la commande représentée par une adresse
+  destination: string, // point de livraison de la commande représentée par une adresse
+  packageSize: IPackageSize // la taille du colis à livrer. small correspond à maximum 5kg, medium à maximum 30 kg, large à maximum 60 kg et xLarge à maximum 100kg
+}
+
+
+export interface IGetQuoteResponse {
+  "code": string, // "200",
+  "message": string, // "Successful",
+  "data": {
+    "origin": string, // "Les Almadies, Dakar, Senegal",
+    "destination": string, // "Medina, Dakar, Senegal",
+    "legs": {
+        "distance": {
+          "text": string, // "5.7 km",
+          "value": number, // 5663
+        },
+        "duration": {
+          "text": string, // "19 mins",
+          "value": number // 1120
+        },
+        "start_address": string, // "Les Almadies, Dakar, Senegal",
+        "end_address": string, // "Medina, Dakar, Senegal",
+        "start_location": {
+          "lat": number, // 14.7165766,
+          "lng": number // -17.467633
+        },
+        "end_location": {
+          "lat": number, // 14.691815,
+          "lng": number // -17.4332306
+        }
+    }[],
+    "total_distance": number, // 5663,
+    "quote": number, // 1000,
+    "normal_quote": number, // 1000,
+    "package_size": string, // "small",
+    "coupon_quote": number, // 0,
+    "delivery_type": string // "standard"
+  }
+}
+
 
 const headers = {
   'content-type': 'application/json',
   'accept': 'application/json'
 }
 
-export default class PapsRepository {
+export default class Paps {
   private readonly options: any;
-  constructor (options: IPapsRepositoryOptions) {
+  constructor (options: IPapsOptions) {
     const defaultOptions = {}
     this.options = Object.assign({}, defaultOptions, options)
   }
@@ -294,7 +338,8 @@ export default class PapsRepository {
     })
   }
 
-  viewAllTasksDetails (options: IViewAllTasksDetailsRequest): Promise<IViewTaskDetailsResponse[]> {
+
+  viewTasks (options: IViewAllTasksDetailsRequest): Promise<IViewTaskDetailsResponse[]> {
     return new Promise((resolve, reject) => {
       axios({
         url: this.getUrl({
@@ -309,17 +354,34 @@ export default class PapsRepository {
     })
   }
 
-  viewTask (taskId: number): Promise<ITaskResponse> {
+
+  viewTask (id: number): Promise<ITaskResponse> {
     return new Promise((resolve, reject) => {
       axios({
-        url: this.getUrl({ method: 'viewTask' }),
+        url: this.getUrl({ method: 'viewTask', id }),
         method: 'GET',
         headers
       })
+        .then(response => resolve(response.data))
+        .catch(error => reject(error))
     })
   }
 
-  cancelTask () {
 
+  cancelTask (id: number) {
+
+  }
+
+
+  getQuotes (payload: IGetQuoteRequest): Promise<IGetQuoteResponse> {
+    return new Promise((resolve, reject) => {
+      axios({
+        url: this.getUrl({ method: 'getQuotes', ...payload }),
+        method: 'GET',
+        headers
+      })
+        .then(response => resolve(response.data))
+        .catch(error => reject(error))
+    })
   }
 }

@@ -4,17 +4,13 @@ module.exports = {
     '^.+\\.tsx?$': 'ts-jest'
   },
   verbose: true,
-  testTimeout: 5000,
+  testTimeout: 10000,
   roots: ['<rootDir>/src', '<rootDir>/test'],
   coveragePathIgnorePatterns: ['<rootDir>/test/', '<rootDir>/node_modules'],
   collectCoverageFrom: [
     '<rootDir>/src/**/*.ts',
     '!**/node_modules/**',
   ],
-  // A map from regular expressions to module names that allow to stub out resources with a single module
-  moduleNameMapper: {
-    "@/(.*)": "<rootDir>/src/$1",
-  },
   coverageDirectory: './coverage',
   bail: 1,
   coverageReporters: ['json', 'html', 'text'],

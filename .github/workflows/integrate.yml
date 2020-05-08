@@ -13,4 +13,6 @@ jobs:
           node-version: 12
       - run: yarn install
       - run: yarn build
+      env: # Or as an environment variable
+        super_secret: ${{ secrets.PAPS_API_KEY }}
       - run: yarn test
