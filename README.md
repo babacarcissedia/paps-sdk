@@ -9,7 +9,7 @@
 # Paps API integration
 Fully tested API integration of https://paps.sn with typescript
 
-Gain some extra time by using this library if you're looking looking forward to integrate delivery system on your website.
+Gain some extra time by using this library if you're looking forward to integrate delivery system on your website.
 
 ## Usage
 
@@ -83,4 +83,4 @@ You want some doc ? Read the tests
 - <a href="https://babacar-cisse-dia.com" alt="Babacar Cissé DIA">Babacar Cissé DIA</a>
 [![](https://img.shields.io/twitter/follow/babacarcissedia?style=social)](https://twitter.com/babacarcissedia)
 
-<img alt="Babacar Cissé DIA" src="https://github.com/bcdbuddy.png" width="100" height="100"/>
+<img alt="Babacar Cissé DIA" src="https://avatars.githubusercontent.com/u/17571380?v=4" width="100" height="100"/>
